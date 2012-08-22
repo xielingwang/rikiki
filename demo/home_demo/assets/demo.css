@@ -1,0 +1,405 @@
+/*
+ * @name: 导航
+ * @overview: 一般导航
+ * @require: null
+ */                                                                   
+.ui-nav {
+	border-bottom: 4px solid #482C21 ; 
+	font-size: 14px ;
+	height: 38px ;
+	list-style-type: none ;
+	margin: 0px 0px 8px 0px ;
+	padding: 29px 0px 0px 0px ;
+}
+.ui-nav-item {
+	float: left ;
+	height: 30px ;
+	line-height: 30px ;
+	margin: 0px 15px 0px 0px ;
+}
+.ui-nav-item:hover {
+    border-color:#000 #FFF #FFF #000;
+    background-color:#482C21;
+}
+.ui-nav-item a {
+	color: #FFFFFF ;
+	float: left ;
+	padding: 0px 12px 0px 12px ;
+	text-decoration: none ;
+	text-transform: uppercase ;
+	zoom: 1 ;
+}
+.ui-nav-item-current{
+    border-color:#000 #FFF #FFF #000;
+    background-color:#9E0B0F;
+}
+.ui-nav-item-child{}
+.ui-nav-item-active-child{}
+
+/*
+ * @name: 标题
+ * @overview: 有其他内容包含在内的标题
+ * @require: null;
+ */
+.ui-title{
+    font-size:2em;
+}
+.ui-title-cnt{}
+.ui-title-subcnt{}
+
+/*
+ * @name: 步骤
+ * @overview: 用户操作步骤
+ * @require: null
+ */
+.ui-step{}
+.ui-step-item{}
+.ui-step-current{}
+
+/* 可能还会需要 */
+.ui-step-item-first{}
+.ui-step-item-last{}
+
+/*
+ * @name: 列表
+ * @overview: 一般列表样式
+ * @require: null;
+ */
+.ui-list{}
+.ui-list-item{}
+.ui-list-item-hover{}
+
+/*
+ * @name: 重复元素
+ * @overview: 重复出现的元素，我们通常用这种方法来写，这样也会方便JS操作
+ * @require: null
+ */
+.ui-repeater{
+	color: #333333 ;
+	font-size: 110% ;
+	list-style-type: none ;
+	margin: 0px 0px 0px 0px ;
+	padding: 0px 0px 0px 0px ;
+}
+.ui-repeater-item{
+	margin: 0px 0px 15px 0px ;
+	padding: 0px 0px 0px 0px ;
+}
+.ui-repeater-current{}
+
+.ui-repeater-item.contact {
+	padding: 7px 10px 7px 10px ;
+	width: 712px ;
+	background-color: #DBDAC1 ;
+}
+
+/* 
+ * @name: ui-dropdown 
+ * @overview: 通用下拉框
+ * @require: null
+ */
+.ui-dropdown {}
+.ui-dropdown-header {}
+.ui-dropdown-container {}
+
+/* status */
+.ui-dropdown-active .ui-dropdown-header  {}
+.ui-dropdown-active .ui-dropdown-container {}
+
+/*
+ * @name: 分页
+ * @overview: 页面分页
+ * @require: null
+ */
+.ui-page{}
+.ui-page-item{}
+.ui-page-item-current{}
+
+/* 可能还会用到的 */
+.ui-page-item-info{}
+.ui-page-item-first{}
+.ui-page-item-last{}
+.ui-page-item-prev{}
+.ui-page-item-next{}
+
+/* 
+ * @name: ui-tip 
+ * @overview: 通用对话框, 通常是 position:absolute 的
+ * @require: null
+ */
+.ui-tip {}
+.ui-tip-cnt {}
+
+/* 
+ * @name: ui-message 
+ * @overview: 通用提示,通用对话框, 通常是 position: relative 的
+ * @require: null
+ */
+.ui-message {}
+.ui-message-cnt {}
+
+/* status */
+.ui-message-error {}
+.ui-message-warn {}
+.ui-message-success {}
+
+/* 
+ * @name: ui-button
+ * @overview: 通用按钮
+ * @require: null
+ */
+.ui-button {
+    display:inner-block;
+    padding:0.5em 1em;
+}
+
+.ui-button-text {}
+.ui-button .ui-icon {}
+
+.ui-button-icon-left {}
+.ui-button-icon-left .ui-icon-rarr {}
+.ui-button-icon-left .ui-button-text {}
+
+.ui-button-icon-right {}
+.ui-button-icon-right .ui-icon-rarr {}
+.ui-button-icon-right .ui-button-text {}
+
+/* status */
+.ui-button-hover {}
+.ui-button-disabled {}
+.ui-state-selected {}
+
+
+/* 
+ * @name: 表单项 
+ * @overview: 通用文本输入框
+ * @require: null
+ */
+.ui-input {
+    width:100%;
+    height:2em;
+}
+/* status */
+.ui-input-hover {}
+.ui-input-focus {}
+.ui-input-disabled {}
+
+.ui-label {}
+/* status */
+.ui-label-hover {}
+.ui-label-focus {}
+
+.ui-textarea {}
+/* status */
+.ui-textarea-hover {}
+.ui-textarea-disabled {}
+
+/* 
+ * @name: ui-form 
+ * @overview: 通用表单
+ * @require: ui-input,ui-button
+ */
+
+.ui-form {}
+.ui-form legend {
+    font-weight:bold;
+    font-size:1.5em;
+    color:#3C77CF;
+    padding:5px 10px;
+}
+
+.ui-form-item{
+    padding:5px 15px;
+}
+
+.ui-form-item > .ui-label{
+    display:block;
+    font-weight:bold;
+}
+
+.ui-form-required {
+    color:red;
+}
+.ui-form-explain {
+    font-size:0.6em;
+    color:#79BBFF;
+}
+
+/* 
+ * @name: ui-tab 
+ * @overview: 通用tab
+ * @require: null
+ */
+.ui-tab {}
+.ui-tab-trigger {}
+.ui-tab-trigger-item {}
+.ui-tab-trigger-item-current{}
+
+.ui-tab-cnt {}
+.ui-tab-cnt-item {}
+.ui-tab-cnt-item-current {}
+
+/*
+ * @name: 表格
+ * @overview: 通用列表
+ * @require: null;
+*/
+.ui-table {}
+
+/*
+ * @name: 特有
+ * @overview: demo 特有
+ *
+ */
+#site-wrapper {
+    background-color:#1f1f1f;
+}
+#site-header{
+    background-color:#2b1812;
+    background-image:url('./site_header_background.jpg');
+    background-repeat:repeat-x;
+    background-position:left top;
+    height:471px;
+    overflow:hidden;
+}
+#site-rikiki-billboard {
+    background-color:white;
+    background-image:url('site_cormvc_billboard.jpg');
+    background-position:center center;
+    background-repeat:no-repeat;
+    height:260px;
+    width:753px;
+    padding:11px;
+    text-indent:9999px;
+    white-space:nowrap;
+}
+#site-rikiki-breakdown {
+    background-color:white;
+    background-image:url('site_mvc_breakdown.jpg');
+    background-position:center center;
+    background-repeat:no-repeat;
+    height:110px;
+    width:753px;
+    padding:0px 11px;
+    text-indent:9999px;
+    white-space:nowrap;
+}
+
+#site-header-content {
+    margin: 0px auto 0px auto;
+    width: 775px;
+}
+#site-body{
+    background-color:white;
+}
+#site-body-content {
+    margin: 0px auto 0px auto;
+    padding:0px 0px 50px;
+    width:775px;
+    font-size: 1.2em;
+}
+#site-body h1{
+    font-size:1.8em;
+    margin-bottom:0.5em;
+}
+#site-body h2 {
+    font-size:1.5em;
+    margin-bottom:0.5em;
+}
+#site-body p {
+    margin:1em 0;
+}
+#site-body ol {
+    margin-left:30px;
+    list-style-type:decimal;
+}
+#site-body ol li{
+    margin-bottom:5px;
+}
+#site-footer {
+    background-image: url('site_footer_background.jpg');
+    background-position:left top;
+    background-repeat: repeat-x;
+}
+#site-footer-content {
+    color: #666;
+    font-size: 1.2em;
+    margin: 0px auto 0px auto;
+    padding: 15px 10px 120px 10px;
+    width:755px;
+}
+
+.ui-repeater-item.contact li.last-contact {
+    margin-bottom: 0px ;
+}
+
+.ui-repeater-item.contact li.contact a {
+    color: #333333 ;
+}
+
+.ui-repeater-item.contact div.summary {
+    font-weight: bold ;
+}
+
+.ui-repeater-item.contact div.summary a.name {
+    text-decoration: none ;
+}
+
+.ui-repeater-item.contact div.actions {
+    float: right ;
+    font-weight: bold ;
+}
+    
+dl.details {
+    padding: 0.5em;
+}
+.details dt {
+    float: left;
+    clear: left;
+    width: 100px;
+    text-align: right;
+    font-weight: bold;
+    color: green;
+}
+.details dt:after {
+    content: ":";
+}
+.details dd {
+    margin: 0 0 0 5em;
+    padding: 0 0 0.5em 2em;
+}
+
+
+.ui-repeater-header {
+	background-color: #2B1812 ;
+	color: #F5BE44 ;
+	font-size: 150% ;
+	height: 50px ;
+	line-height: 48px ;
+	margin-bottom: 1em ;
+	padding: 0px 20px 0px 20px ;
+	}
+
+.ui-repeater-header form {
+	float: left ;
+	}
+	
+.ui-repeater-header input {
+	background-color: #482C21 ;
+	border: 1px solid #663E2F ;
+	color: #FFFFFF ;
+	font-size: 100% ;
+	margin-top: -2px ;
+	padding: 0px 0px 1px 5px ;
+	width: 440px ;
+	}
+	
+.ui-repeater-header a {
+	color: #F5BE44 ;
+	float: right ;
+	text-decoration: none ;
+	}
+
+.ui-repeater-header span.contrast {
+	color: #FFFFFF ;
+	}

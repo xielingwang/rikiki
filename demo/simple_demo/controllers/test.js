@@ -1,47 +1,55 @@
-$.rikiki(function(){
-    $.rikiki.view("fuck1", $("[rel=fuck1]","#controller-test"));
-    $.rikiki.view("fuck2", $("[rel=fuck2]","#controller-test"));
-    $.rikiki.view("fuck3.3", $("[rel=fuck3]","#controller-test"));
-    $.rikiki.view("fuck3", "<span>fuck content 3</span>",$("#controller-test"));
-    $.rikiki.view("fuck4", "fuck content4",	$("#controller-test"));
-    $.rikiki.view({
+Rikiki.ready(function(){
+    console.log("test controller");
+
+    Rikiki.View("fuck1", $("[rel=fuck1]","#controller-test"));
+    Rikiki.View("fuck2", $("[rel=fuck2]","#controller-test"));
+    Rikiki.View("fuck3.3", $("[rel=fuck3]","#controller-test"));
+    Rikiki.View("fuck3", "<span>fuck content 3</span>",$("#controller-test"));
+    Rikiki.View("fuck4", "fuck content4",	$("#controller-test"));
+    Rikiki.View({
 		name:"fuck5",
 		content:$("<div />").text("fuck content 5"), 
 		parent:$("#controller-test")
     });
+    
+    console.log(Rikiki.View("fuck1"));
 
-    $.rikiki.view("index", $("[rel=index]","#controller-test"));
-    $.rikiki.controller("test", {
-        views:["fuck1", "fuck2", "fuck3", "fuck4", "fuck5", "index"],
+    Rikiki.View("index", $("[rel=index]","#controller-test"));
+    Rikiki.Controller("test", {
+        _views:["fuck1", "fuck2", "fuck3", "fuck4", "fuck5", "index"],
         action_index:function(params){
             console.log('action index');
             console.log(params);
         },
         action_fuck1:function(){
                          console.log('action fuck1');
-                         $.rikiki.view("fuck1").data('title', 'hello').data('year', Math.random()*10000+1);
-                         $.rikiki.view("fuck1").show();
+                         Rikiki.View("fuck1").data('title', 'hello').data('year', Math.random()*10000+1);
+                         Rikiki.View("fuck1").show();
                      },
         action_fuck2:function(){
                          console.log('action fuck2');
                          var datas = [{key:'fuck2', value:'fuck2value'},{key:Math.round(Math.random()*1000),value:778}];
-                         $.rikiki.view("fuck2").data('datas', datas);
-                         $.rikiki.view("fuck2").show();
+                         Rikiki.View("fuck2").data('p', {key:'fuck2', value:'fuck2value'});
+                         Rikiki.View("fuck2").show();
                      },
         action_fuck3:function(){
                          console.log('action fuck3');
-                         $.rikiki.view("fuck3").show();
+                         Rikiki.View("fuck3").show();
                      },
         action_fuck4:function(){
                          console.log('action fuck4');
-                         $.rikiki.view("fuck4").show();
+                         Rikiki.View("fuck4").show();
                      },
         action_fuck5:function(){
                          console.log('action fuck5');
-                         $.rikiki.view("fuck5").show();
+                         Rikiki.View("fuck5").show();
                      }
                         });
+console.log(Rikiki.Controller("test")); 
 });
+
+
+
 /*
 function Animal(){
     this.species = "动物";

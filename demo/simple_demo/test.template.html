@@ -1,0 +1,173 @@
+<html>
+	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<script src="../../core/jquery-1.7.1.min.js" type="text/javascript"></script>
+		<script src="../../core/jquery.tmpl.min.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div id="container">
+        </div>
+        <a id="doSth" href='javascript:void(0)'>Do something</a>
+        <script id="title" type="text/x-jquery-tmpl">
+            {{if tag}}
+            <${tag}>${title}</${tag}>
+            {{else}}
+            <h1>${title}</h1>
+            {{/if}}
+        </script>
+        
+        <script id="tmpl" type="text/x-jquery-tmpl">
+            <p>${Name}(${ReleaseYear})</p>
+        </script>
+        
+        <script id="tmplItem" type="text/x-jquery-tmpl">
+            <p>${Name}(${ReleaseYear})</p>
+        </script>
+        
+        <script id="template-1" type="text/x-jquery-tmpl">
+            <p>${Name}(${ReleaseYear})</p>
+        </script>
+        
+        <script id="template-2" type="text/x-jquery-tmpl">
+            <p>${Name} - ${ReleaseYear}</p>
+        </script>
+        
+        <script id="dollar" type="text/x-jquery-tmpl">
+            <h4>.variable</h4>
+            <p>${Id} - ${Name}(${ReleaseYear})</p>
+            <h4>.express</h4>
+            <p>${Id + 10} - ${"xx" + Name} - ${ReleaseYear>1980}</p>
+            <h4>.function</h4>
+            <p>Id*30 = ${tst(Id,30)} - ${"xx" + Name} - ${ReleaseYear>1980}</p>
+        </script>
+        
+        <script id="html" type="text/x-jquery-tmpl">
+            <div><h2>${Name}</h2></div>
+            withHtml:<p>{{html Synopsis}}</p>
+            withoutHtml:<p>${Synopsis}</p>
+            function:<p>{{html toStr(Name)}}</p>
+            String:<p>{{html "<b>Fuckyoumother</b>"}}</p>
+        </script>
+        
+        
+        <script id="ifelse" type="text/x-jquery-tmpl">
+            <li {{if Id > 2}}style="color:red"{{else Id < 2}}style="color:pink"{{/if}}>${Name}</li>
+        </script>
+        
+        <script id="each" type="text/x-jquery-tmpl">
+            <ul>
+            {{each arr}}
+            <li>${$index+1} => ${$value} => ${$value*$value}</li>
+            {{/each}}
+            </ul>
+        </script>
+        
+        <script id="tmpl-" type="text/x-jquery-tmpl">
+            <strong>Total:${total},Num:${num}</strong>
+            <ol>
+            {{tmpl(list) "#ifelse"}}
+            </ol>
+        </script>
+        
+        <script id="wrap" type="text/x-jquery-tmpl">
+            <h3>Wrap ${Title}</h3>
+            
+            <div class="parent" style='color:${color}'>
+            直接输出
+            {{html $item.html()}}
+            
+            过滤输出
+            {{each $item.html("strong")}}
+                <li><strong>{{html $value}}</strong></li>
+            {{/each}}
+            {{each $item.html("a")}}
+                <li>{{html $value}}</li>
+            {{/each}}
+            </div>
+        </script>
+        <script id="wrap-c" type="text/x-jquery-tmpl">
+            <p>Title:${Title}</p>
+            {{wrap({color:'red'}) "#wrap"}}
+                <strong>One</strong>
+                <a href="#">I'am a fool nne!</a>
+                <strong class="children">Two</strong>
+                <a href="#">I'am a fool two!</a>
+            {{/wrap}}
+        </script>
+    </body>
+</html>
+
+<script type="text/javascript">
+var movies = [
+    { Name: "The Red Violin", ReleaseYear: "1998", Id:1 },
+    { Name: "Eyes Wide Shut", ReleaseYear: "1999", Id:2 },
+    { Name: "The Inheritance", ReleaseYear: "1976", Id:3 }
+];
+// tmpl
+$("#title").tmpl({title:".Tmpl"}).appendTo("#container");
+$( "#tmpl" ).tmpl( movies )
+    .appendTo( "#container" );
+    
+// tmpl Item
+$("#title").tmpl({title:".TmplItem"}).appendTo("#container");
+$( "#tmplItem").tmpl( movies )
+    .appendTo( "#container" );
+    
+// template
+$("#title").tmpl({title:".template"}).appendTo("#container");
+$("#template-1").template("t1");
+$("#template-2").template("t2");
+$.tmpl("t1", movies).appendTo("#container");
+$.tmpl("t2", movies).appendTo("#container");
+
+// dollar
+function tst(a, b) {return a * b;}
+$("#title").tmpl({title:".dollar"}).appendTo("#container");
+$("#dollar").tmpl(movies).appendTo("#container");
+
+// html
+$("#title").tmpl({title:".template"}).appendTo("#container");
+$("#html").tmpl({Synopsis:"fdsfdsf<strong>Fuck</strong>",
+    Name:"html",
+    toStr:function(name){return "<strong>"+name+"</strong>dfsdsdf"}
+    }).appendTo("#container");
+
+// if else
+$("#title").tmpl({title:".if/.else"}).appendTo("#container");
+var ol = $("<ol/>");
+$("#ifelse").tmpl([{Id:1,Name:"Item1"},{Id:2,Name:"Item2"},{Id:3,Name:"Item3"},{Id:4,Name:"Item4"}])
+    .appendTo(ol);
+ol.appendTo("#container");
+
+// each
+$("#title").tmpl({title:".each"}).appendTo("#container");
+$("#each").tmpl({arr:[1,2,3,4,5,6,7,8,10]}).appendTo("#container");
+
+// tmpl
+$("#title").tmpl({title:".tmpl"}).appendTo("#container");
+$("#tmpl-").tmpl({
+    list:[
+        {Id:1,Name:"Item1"},
+        {Id:2,Name:"Item2"},
+        {Id:3,Name:"Item3"},
+        {Id:4,Name:"Item4"}
+        ],
+    total:20,
+    num:20
+    }).appendTo("#container");
+    
+// wrap
+$("#title").tmpl({title:".wrap"}).appendTo("#container");
+$("#wrap-c").tmpl({Title:"Here Wrap Title"}).appendTo("#container");
+
+$('#doSth').click(function(){
+    // tmplItem
+    console.log($("p").tmplItem());
+    var item = $("p:last").tmplItem();
+    item.data = { Name: "Inheritance", ReleaseYear: "2003" };
+    console.log(item.nodes);
+    item.update();
+    console.log($(item.nodes).css({backgroundColor:'red'}));
+});
+
+</script>

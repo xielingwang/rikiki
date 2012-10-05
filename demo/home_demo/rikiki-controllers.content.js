@@ -1,32 +1,32 @@
 $.rikiki(function(){
-    $.rikiki.view("documentation", $("[rel=documentation]", "#ui-view-content"));
-    $.rikiki.view("resource", $("[rel=resource]", "#ui-view-content"));
+    Rikiki.View("documentation", $("[rel=documentation]", "#ui-view-content"));
+    Rikiki.View("resource", $("[rel=resource]", "#ui-view-content"));
 
-    $.rikiki.controller("content", {})
+    Rikiki.Controller("content", {})
         .conflictController("contact")
         .before(function(){
             this.modelContact = new Contact();
         })
         
-        .view($.rikiki.view("home", $("[rel=home]", "#ui-view-content")))
+        .View(Rikiki.View("home", $("[rel=home]", "#ui-view-content")))
         .action("index", function() {
             this.action("home");
         })
         
         .action("home", function() {
             document.title = "Rikiki Home Page";
-            this.view("home").show();
+            this.View("home").show();
         })
         
-        .view("documentation")
+        .View("documentation")
         .action("documentation", function(){
                 document.title = "Rikiki Documentation";
-                this.view("documentation").show();
+                this.View("documentation").show();
             })
             
-        .view("resource")
+        .View("resource")
         .action("resource", function(){
             document.title = "Rikiki Resource";
-            this.view("resource").show();
+            this.View("resource").show();
         });
 });

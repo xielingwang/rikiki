@@ -1,5 +1,5 @@
 $.rikiki(function(){
-    $.rikiki.view("contacts-list", $("[rel=contacts-list]", "#ui-view-content"))
+    Rikiki.View("contacts-list", $("[rel=contacts-list]", "#ui-view-content"))
         .bind(".ui-button-more", 'click', function(){
             $(this).parents('.contact').children('.details').toggle("normal");
         })
@@ -15,7 +15,7 @@ $.rikiki(function(){
             }).hide();
         });
         
-    $.rikiki.view("contact-edit", $("[rel=contact-edit]", "#ui-view-content"))
+    Rikiki.View("contact-edit", $("[rel=contact-edit]", "#ui-view-content"))
         .bind(".ui-button-cancel", 'click', function(){
             var ret = window.confirm("Are you sure you want to cancel?");
             console.log(ret);

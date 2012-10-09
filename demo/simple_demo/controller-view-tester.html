@@ -105,9 +105,9 @@ $("#toggle input").bind('click', function(){
 $("#change-data input").bind('click', function(){
     datas.title = "Kiss my ass!";
     datas.index ++;
-    Rikiki.View($(this).attr("class")).global_data(datas);//.toggle();
+    Rikiki.View($(this).attr("class")).global_data(datas);
 });
-Rikiki.Route_set('tester', '<controller>/<action>(/<id>)')//, {id:'\\d+',controller:'\\w+',action:'\\w+'})
+Rikiki.Route_set('tester', '<controller>/<action>(/<id>)')
                 .defaults({id:5838, controller:'tester', action:'index'});
 Rikiki.Controller("tester", {
     action_index : function(id){

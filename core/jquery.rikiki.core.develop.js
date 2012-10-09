@@ -71,7 +71,7 @@
         }
     // strtr("afdfs:typeferer", {":type":"777"})=>afds777ferer
     String.prototype.strtr = String.prototype.strtr
-        || function(str, from, to){
+        || function(from, to){
             var str = ''+this;
             if (typeof(str) != 'string')
                 return str;
@@ -85,18 +85,23 @@
             }
             return str.replace(from, to);
         }
-    // '<controller>/<action>'.preg_group({controller:'\s+',action:'\s+'}, 'abc/def');
+    /* 
+     * examples: 
+     * uses '<controller>/<action>'.preg_group({controller:'\\w+',action:'\\w+'}, 'abc/def'); 
+     * or   '<controller>/<action>'.preg_group({controller:/\w+/,action:/\w+/}, 'abc/def'); 
+     */ 
     String.prototype.preg_group = String.prototype.preg_group ||
         function(groups, s){
-            // console.log('preg_group', groups, s);
             var names = [], result = {}, cursor = 0;
             var re = ''+this;
             re = re.replace(/<(\w+)>/g, function(m, gname) {
                 names.push(gname);
                 if (groups[gname] == undefined)
-                    return '(\\w+)';
-                else
-                    return '(:regex)'.replace(/:regex/g, groups[gname]);
+                    return '(.+)';
+                else {
+                    var greg = groups[gname].toString().replace(/^\//, '').replace(/\/$/, '');
+                    return '(:regex)'.strtr({':regex' : greg});
+                }
             });
             
             re = new RegExp(re);
@@ -114,8 +119,8 @@
     
     $.extend({
         hash:function(hash) {
-            if (!hash) {
-                var hash = (undefined == window.location.hash) ? '': window.location.hash.replace(Rikiki.Config('locationHashPrefix'), "").replace(/^#/g, '');
+            if (typeof(hash) == 'undefined') {
+                var hash = (!window.location.hash) ? '': window.location.hash.replace(Rikiki.Config('locationHashPrefix'), "").replace(/^#/g, '');
                 return hash;
             }
             else {
@@ -178,6 +183,39 @@
     RikikiCore = {};
     Rikiki = {};
 
+    /*
+     * preset config
+     * the system will have faulty wihtout this configures
+     */
+    RikikiData.config = {
+        // for system
+        locationHashPrefix : "#!",
+        locationHashTrackInterval : 500,
+
+        // debug
+        debug : false,
+
+        // for model
+        model : {
+            base_url : 'http://localhost/mt/demo/simple_demo/',
+            process_style : 'http-status', // http-status(xhq.status, xhq.response) data-status(response.status, response.data)
+            process_status_key : 'error',
+            process_data_key : 'data',
+            ajax_dataType : 'json',
+
+            // post type (http-method, query-action)
+            // http-method - get/query, put/update, post/create, delete/delete 
+            // query-action - when update delete set query key action = update/ delete
+            post_type:'http-method', 
+            post_key:'action'
+        }
+    };
+
+    /*
+     * ready funtion
+     * likes jQuery.ready(), it will run as soon as system.start()
+     *
+     */
     Rikiki.ready = RikikiCore.ready = function(fun){
         RikikiData.bootstraps = RikikiData.bootstraps || [];
         if ($.isFunction(fun)) {
@@ -196,29 +234,20 @@
         Rikiki.Runtime("hashTimerId", setInterval('Rikiki.Event_run("locationHashTrackTimer")', Rikiki.Config('locationHashTrackInterval')));
     }
 
+    RikikiCore.stop = function(){
+        clearInterval(Rikiki.Runtime("hashTimerId"));
+    }
+
     // about route
     // <controller>/<action>, 
     RikikiCore.route = function (uri, regex){
-        regex = regex || {id:'\\d+',controller:'\\w+',action:'\\w+'};
-        this._vars = {
-            defaults:{controller:'welcome', action : 'index'},
-            uri_regex:'',
-            regex_map:regex
-        };
-        
-        // uri = $.Utility.String.trim(uri, "/");
-        uri = uri.super_trim("/");
-        
+        // prototype
         this.defaults = function (defaults) {
             this._vars.defaults = $.extend({}, this._vars.defaults, defaults);
             return this;
         }
-        
-        // var _regex_order;
         this.matches = function (_uri) {
-            // _uri = $.Utility.String.trim(_uri, "/");
             _uri = _uri.super_trim("/");
-            // var ret = $.Utility.Regex.group(this._vars.uri_regex, this._vars.regex_map, _uri);
             var ret = this._vars.uri_regex.preg_group(this._vars.regex_map, _uri);
             if (ret === false)
                 return false;
@@ -226,6 +255,16 @@
             ret = $.extend({}, this._vars.defaults, ret);
             return ret;
         }
+
+        // init
+        regex = regex || {id:/\d+/, controller:/\w+/,action:/\w+/};
+        this._vars = {
+            defaults:{controller:'welcome', action : 'index'},
+            uri_regex:'',
+            regex_map:regex
+        };
+        
+        uri = uri.super_trim("/");
         
         this._vars.uri_regex = (function(uri){
             return "^" + uri.replace(/\(/g, '(?:').replace(/\)/g, ')?') + "$";
@@ -335,11 +374,6 @@
                 var msg = "Class :Class not existed".replace(":Class", classname);
                 throw new Rikiki.Exception_Reflection(msg);
             }
-            
-            // _classes_cached
-            /*
-              RikikiData.classes_cached[classname] = new RikikiData.classes[classname]();
-            */
             
             // return 
             return RikikiData.classes[classname];
@@ -895,7 +929,7 @@
         });
         // 4.Stop System
         Rikiki.Event("stopApplication", function() {
-            clearInterval(Rikiki.Runtime("hashTimerId"));
+            Rikiki.stop();
         });
     });
 
@@ -934,12 +968,53 @@
     // .Config
     RikikiCore.config = function(nameOrObject, val) {
         if ($.isPlainObject(nameOrObject)) {
-            RikikiData.config = $.extend({}, RikikiData.config, nameOrObject);
+            var obj = nameOrObject;
+            RikikiData.config = $.extend({}, RikikiData.config, obj);
             return RikikiData.config;
         }
-        if (val == undefined)
-            return RikikiData.config[nameOrObject];
-        return RikikiData.config[nameOrObject] = val;
+
+        var name = nameOrObject;
+
+        if (typeof(name) == 'undefined')
+            return RikikiData.config;
+
+        var nls = name.split(".");
+        if (nls.length <= 1) {
+            if (typeof(val) == 'undefined') 
+                return RikikiData.config[name];
+
+            return RikikiData.config[nameOrObject] = val;
+        }
+        else {
+            // get
+            if (typeof(val) == 'undefined') {
+                var iterator = RikikiData.config;
+                for(var k = 0; k < nls.length; k++) {
+                    var v = nls[k];
+                    if (typeof(iterator[v]) == 'undefined')
+                        return;
+                    else {
+                        if (k + 1 == nls.length)
+                            return iterator[v];
+                        iterator = iterator[v];
+                    }
+                }
+            }
+            // set
+            else {
+                var iterator = RikikiData.config;
+                for(var k = 0; k < nls.length; k++) {
+                    var v = nls[k];
+                    if (k + 1 < nls.length) {
+                        typeof(iterator[v]) == 'undefined' ? iterator[v] = {} : null;
+                        iterator = iterator[v];
+                    }
+                    else {
+                        return iterator[v] = val;
+                    }
+                }
+            }
+        }
     };
 
     // about request
@@ -1061,15 +1136,193 @@
         }).addClass("ui-nav-item-current");
     }
 
-    // preset
-    Rikiki.ready(function(){
-        Rikiki.Config({
-            locationHashPrefix:"#!",
-            locationHashTrackInterval:500,
-            debug:false
-        });
-    });
+    // model
+    RikikiCore.httprequest = function(options, response_processors) {
+        /*
+         * accepts async beforeSend(XMLHttpRequest) cache complete(XMLHttpRequest, textStatus) contents 
+         * contentType[urlencoded] context converters crossDomain[false,true] data dataFilter(data, type)
+         * dataType[xml,html,script,json,jsonp,text] error(XMLHttpRequest, textStatus, errorThrown)
+         * global[true,false] headers[key/value] ifModified isLocal jsonp jsonCallback mimeType password
+         * processData scriptCharset statusCode[{}] success(data, textStatus, XMLHttpRequest) timeout 
+         * traditional type url username xhr xhrFields
+         */
+        
+        // url
+        options.url = (Rikiki.Config('model.base_url') + options.url).replace(/\/\//g, '/').replace(':/', '://');
+        var lioqm = options.url.lastIndexOf('?');
+        var lioa = options.url.lastIndexOf("&");
+        var maxIndex = options.url.length - 1;
+        if (options.query_data) {
+            options.url += ((lioqm < 0) 
+                            ? "?" 
+                            : (lioqm < maxIndex && lioa < maxIndex) ? "&" : "") + $.param(options.query_data);
+        }
 
+        // data Type
+        options.dataType = Rikiki.Config('model.ajax_dataType');
+
+        // return json processor
+        var return_json_processor = function(status, data, type) {
+            if (status && typeof(response_processors[status]) === 'function') {
+                response_processors[status](data, type);
+            }
+            else {
+                console.warn('undefined processor for status ' + status);
+            }
+        }
+
+        // process style: uses http status code or data status
+        switch (Rikiki.Config('model.process_style')) {
+            case 'http-status':
+            options.complete = function(xhq, message) {
+                switch (this.dataType) {
+                case 'json':
+                    return_json_processor(xhq.status, $.parseJSON(xhq.responseText)); // parseXML
+                    break;
+                default:
+                    throw 'Rikiki didn\'t support dataType ' + this.dataType + ' yet';
+                    break;
+                }
+            }
+            break;
+            case 'data-status':
+            options.success = function(response, message) {
+                switch (this.dataType) {
+                case 'json':
+                    var status_key = Rikiki.Config('model.process_status_key');
+                    var data_key = Rikiki.Config('model.process_data_key');
+                    if (typeof(response[status_key]) === 'undefined') {
+                        throw "response data haven't a key named '" + status_key + "'";
+                    }
+                    if (typeof(response[data_key]) === 'undefined') {
+                        throw "response data haven't a key named '" + data_key + "'";
+                    }
+                    return_json_processor(response[data_key], response[data_key]);
+                    break;
+                default:
+                    throw 'Rikiki didn\'t support dataType ' + this.dataType + ' yet';
+                    break;
+                }
+            }
+            options.error = function(xhq, statusText,errorThrown) {
+                console.error(xhq.responseText);
+            }
+            break;
+            default:
+            throw "unrecognized process type '" + Rikiki.Config('model.process_style') + "' for Rikiki.httprequest options";
+            break;
+        }
+        /*
+        options.error = function() {console.log('error', arguments);}
+        options.beforeSend  = function(xhq, opts) {console.log('beforeSend', this, arguments);}
+        options.complete  = function(xhq, message) {console.log('complete', this, arguments);}
+        options.dataFilter  = function(data, type) {console.log('dataFilter', this, arguments); return data;}
+        options.success  = function(data, message, xhq) {console.log('success', this, arguments);}
+        /**/
+        console.log("");
+        console.log(options);/**/
+        $.ajax(options);
+    }
+    RikikiCore.httprequest_query = function(uri, query_data, response_processors) {
+        var default_response_processors = {
+            200 : function(data){
+                console.log('query', 200, data);
+            }, 
+            404 : function(data){
+                console.log('query', 404, data)
+            }
+        };
+        response_processors = $.extend({}, default_response_processors, response_processors);
+        var options = {
+            type:'get', 
+            url:uri, 
+            data:query_data
+        };
+        Rikiki.httprequest(options, response_processors);
+    }
+    RikikiCore.httprequest_delete = function(uri, query_data, response_processors) {
+        var default_response_processors = {
+            201 : function(data){
+                console.log('not found', 201, data);
+            },
+            200: function(data){
+                console.log('delete', 200, data);
+            }
+        };
+        response_processors = $.extend({}, default_response_processors, response_processors);
+
+        var method = 'delete';
+        query_data = query_data || {};        
+        if (Rikiki.Config('model.post_type') == 'query-action') {
+            method = 'post';
+            query_data[Rikiki.Config('model.post_key')] = 'delete';
+        }
+        var options = {
+            type:method, 
+            url:uri
+        };
+        if (method === 'delete') 
+            options.data = query_data;
+        else
+            options.query_data = query_data;
+        Rikiki.httprequest(options, response_processors);
+    }
+    RikikiCore.httprequest_create = function(uri, query_data, data, response_processors) {
+        var default_response_processors = {
+            201 : function(data){
+                console.log('existed', 201, data);
+            },
+            400 : function(data){
+                console.log('parameter error', 400, data);
+            },
+            200: function(data){
+                console.log('ok', 200, data);
+            }
+        };
+        response_processors = $.extend({}, default_response_processors, response_processors);
+
+        var options = {
+            type:'post', 
+            url:uri, 
+            data:data,
+            query_data:query_data
+        };
+        Rikiki.httprequest(options, response_processors);
+    }
+    RikikiCore.httprequest_update = function(uri, query_data, data, response_processors) {
+        var default_response_processors = {
+            404 : function(data){
+                console.log('not found', 404, data);
+            },
+            400 : function(data){
+                console.log('parameter error', 400, data);
+            },
+            200: function(data){
+                console.log('ok', 200, data);
+            }
+        };
+        response_processors = $.extend({}, default_response_processors, response_processors);
+
+        var method = 'put';
+        query_data = query_data || {};        
+        if (Rikiki.Config('model.post_type') == 'query-action') {
+            method = 'post';
+            query_data[Rikiki.Config('model.post_key')] = 'update';
+        }
+        var options = {
+            type:method, 
+            url:uri, 
+            data:data,
+            query_data:query_data
+        };
+        if (options.type == 'put') {
+            options.data = JSON.stringify(options.data);
+            options.contentType = 'application/json';
+        }
+        Rikiki.httprequest(options, response_processors);
+    }
+
+    // preset
     Rikiki.ready(function(){
         Rikiki.View("404", "uri not found");
         Rikiki.Controller(
@@ -1169,6 +1422,23 @@
         return RikikiCore.UI_Current.apply(this, arguments);
     }
 
+    // model
+    Rikiki.httprequest = function(options, response_processors) {
+        return RikikiCore.httprequest.apply(this, arguments);
+    }
+    Rikiki.httprequest_update = function(url, query_data, data, response_processors) {
+        return RikikiCore.httprequest_update.apply(this, arguments);
+    }
+    Rikiki.httprequest_create = function(url, query_data, data, response_processors) {
+        return RikikiCore.httprequest_create.apply(this, arguments);
+    }
+    Rikiki.httprequest_delete = function(url, query_data, response_processors) {
+        return RikikiCore.httprequest_delete.apply(this, arguments);
+    }
+    Rikiki.httprequest_query = function(url, query_data, response_processors) {
+        return RikikiCore.httprequest_query.apply(this, arguments);
+    } 
+    
     Rikiki.Effect_Show = function(params) {
         return RikikiCore.Effect('show', params);
     }

@@ -20,7 +20,7 @@
             <input name="1111" value="1111" />
             <input name="yyyy" value="yyyyy" />
             <select name="selected">
-                <option value="ffff">ffff</option>
+                <option value="contrl">contrl</option>
                 <option value="qqqq">qqqq</option>
                 <option value="eeee" selected>eee</option>
             </select>
@@ -30,7 +30,7 @@
             <input type="checkbox" name="checkbox_3" value="4" checked />
         </form>
         <div id="testview">
-            <script id="fffff" type="text/x-jquery-tmpl">
+            <script id="contrlf" type="text/x-jquery-tmpl">
                 <h1>${Title}</h1>
             </script>
         </div>
@@ -55,7 +55,13 @@ test('String.super_trim', function() {
     ok("// **dfsfd sfsd** //".super_trim("/ *") === "dfsfd sfsd", "字符串修饰成功");
 });
 
+test('String.strtr', function() {
+    ok(":c1, :c2!".strtr({':c1':'hello world', ':c2':'fucking code'}) == 'hello world, fucking code!', "strtrOK");
+});
+
 test('String.preg_group', function() {
+    ok(!("<fff>_<bbb>".preg_group({fff:/\d+/,bbb:/\w+/}, 'fff_555')), "匹配失败");
+    ok("<fff>_<bbb>".preg_group({fff:/\d+/,bbb:/\w+/}, '555_fff'), "匹配成功");
     ok(!("<fff>_<bbb>".preg_group({fff:'\\d+',bbb:'\\w+'}, 'fff_555')), "匹配失败");
     ok("<fff>_<bbb>".preg_group({fff:'\\d+',bbb:'\\w+'}, '555_fff'), "匹配成功");
 });
@@ -63,14 +69,20 @@ test('String.preg_group', function() {
 module( "Rikiki" );
 
 test('Config', function() {
-    Rikiki.Config({
-        locationHashPrefix:"#!",
-        locationHashTrackInterval:100,
-        debug:true
-    });
-    ok(Rikiki.Config('debug'), '取值成功');
+    ok(Rikiki.Config('debug') !== null, 'access ok');
     Rikiki.Config('debug', false);
-    ok(!Rikiki.Config('debug'), '设置并取值成功');
+    ok(false === Rikiki.Config('debug'), 'set and access ok');
+
+    Rikiki.Config("sub.abc", 'refsd');
+    Rikiki.Config("mutiple", {abc:'abc',bcd:'bcd'});
+    ok(Rikiki.Config('sub.abc') === 'refsd', 'multiple grades access ok');
+    ok(Rikiki.Config('mutiple.abc') === 'abc', 'multiple grades access ok');
+
+    Rikiki.Config('abc','hello');
+    Rikiki.Config({ccc:2,ddd:'33'});
+    ok(Rikiki.Config('abc') === 'hello', 'string config ok');
+    ok(Rikiki.Config('ddd') === '33', 'object string config ok');
+    ok(Rikiki.Config('ccc') === 2, 'object integer config ok');
 });
 
 test('$.hash', function() {
@@ -80,9 +92,10 @@ test('$.hash', function() {
     var hash = '/333/121';
     $.hash(hash);
     ok($.hash() == hash, hash + ' 设置和取出一致');
-    var hash = '/rwe3/324.tr';
+    var hash = '/test/hash';
     $.hash(hash);
     ok($.hash() == hash, hash + ' 设置和取出一致');
+    $.hash('');
 });
 
 test('$().in_dom', function() {
@@ -98,46 +111,17 @@ test('$("form").serializeObject', function() {
 });
 
 test('route', function() {
-    Rikiki.Route_set("ffff", "<controller>/<action>", {controller:'ffff.*', action:'yes.*'});
-    Rikiki.Route_set("default", "<controller>/<action>", {controller:'fff.*', action:'no.*'});
-    ok(Rikiki.Route_get("ffff").matches("/ffff/nofdsf") === false, "ffff /ffff/nofdsf 不符合");
-    var o = Rikiki.Route_get("default").matches("/ffff/nofdsf");
+    Rikiki.Route_set("contrl", "<controller>/<action>", {controller:/contrl\w+/, action:/yes\w+/});
+    Rikiki.Route_set("default", "<controller>/<action>", {controller:/contrl\w+/, action:/no\w+/});
+    ok(Rikiki.Route_get("contrl").matches("/contrluuu/nopppp") === false, "contrl /contrl/nofdsf 不符合");
+    var o = Rikiki.Route_get("default").matches("/contrluuu/nopppp");
     ok(o !== false, o.controller + " " + o.action);
-});
-
-
-test('config', function() {
-    Rikiki.Config('abc','hello');
-    Rikiki.Config({ccc:2,ddd:'33'});
-    ok(Rikiki.Config('abc') === 'hello', 'config ok');
-    ok(Rikiki.Config('ddd') === '33', 'config ok');
-    ok(Rikiki.Config('ccc') === 2, 'config ok');
 });
 
 test('event', function() {
     var fun = function(){}
     Rikiki.Event("eventname", fun);
-    console.log(Rikiki.Event("eventname"));
+    // console.log(Rikiki.Event("eventname"));
     ok(Rikiki.Event("eventname") == fun, "event ok");
 });
-
-Rikiki.View("fuck4", $("#fffff")).data({Title:"标题"});
-Rikiki.View("fuck4").show();
-Rikiki.View("fuck4").data({Title:"标题标题"});
-//Rikiki.View("fuck4").hide();
-//Rikiki.View("fuck4").show();
-
-
-// $("#fffff").tmpl({Title:"ererere"}).appendTo("body");
-/*
-Rikiki.Effect_Show(function(){
-    this.css({backgroundColor:'blue'}).fadeIn(5)
-        .animate( { width: "60%"}, { duration: 5 } )
-        .animate( { fontSize: '1em' } , 5 );
-});
-Rikiki.Effect_Hide({fx:'slideUp',speed:100});
-Rikiki.View("fuck4").show();
-Rikiki.View("fuck5", "<div id='aaa'>abc${Name}fsdf</div>", "body").data({Name:"YYYY"});
-Rikiki.View("fuck5").show().hide();
-*/
 </script>

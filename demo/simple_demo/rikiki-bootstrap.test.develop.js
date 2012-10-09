@@ -5,6 +5,6 @@ Rikiki.ready(function(){
         locationHashTrackInterval:3000
     });
 
-    Rikiki.Route_set('default', '(<controller>(/<action>(/<id>)))',{id:'\\d+',controller:'\\w+',action:'\\w+'})
-                .defaults({id:2, controller:'test', action:'index'});
+    Rikiki.Route_set('default', '(<controller>(/<action>(/<id>)))',{id:/\d+/,controller:/\w+/,action:/\w+/})
+                .defaults({id:null, controller:'test', action:'index'});
 });

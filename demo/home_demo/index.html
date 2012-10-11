@@ -43,7 +43,7 @@
                 <!-- BEGIN: Site body content. -->
                 <ul id="ui-view-content">
                     <li rel="contact-edit">
-                        <form class="ui-form rikiki" action="#!/contact/edit/${contact.id}">
+                        <form class="ui-form" type='rikiki-form' action="#!/contact/edit/${contact.id}">
                             <legend>Add / Edit Contact</legend>
                             <fieldset>
                                 <input type="hidden" name="id" value="${contact.id}" />
@@ -120,11 +120,15 @@
                     <li rel="home" class="ui-repeater">
                     <h1>Welcome to Rikiki MVC - My jQuery-powered Client MVC Framework.</h1>
                     <p>
-                    Rikiki MVC is a jQuery-powered Model-View-Controller (MVC) framework that 
-                    can aide in the development of single-page jQuery applications. It evolved out of
+                    Rikiki MVC is a jQuery-powered Model-View-Controller (MVC) framework that 
+
+                    can aide in the development of single-page jQuery applications. It evolved out of
+
                     my recent presentation, 
-                    <a href="http://www.bennadel.com/blog/1730-Building-Single-Page-Applications-Using-jQuery-And-ColdFusion-With-Ben-Nadel-Video-Presentation-.htm" target="_blank">Building Single-Page Applications Using jQuery And ColdFusion</a>,
-                    and will continue to evolve as I think more deeply about this type of application
+                    <a href="http://www.bennadel.com/blog/1730-Building-Single-Page-Applications-Using-jQuery-And-ColdFusion-With-Ben-Nadel-Video-Presentation-.htm" target="_blank">Building Single-Page Applications Using jQuery And ColdFusion</a>,
+
+                    and will continue to evolve as I think more deeply about this type of application
+
                     architecture.
                     </p>
                     
@@ -139,66 +143,126 @@
 						<h2>Rikiki MVC Philosophy</h2>
 						
 						<p>
-							Building frameworks in jQuery (or any other language for that matter) is
-							very new to me; I don't claim to be any good at it. In fact, when I started
-							looking into jQuery-based frameworks, I had no intention of creating my own. 
-							As I started to do my research, however, I quickly encountered two major problems
-							with what was avilable:
-						</p>
-						
-						<ol>
-							<li>
-								Most examples were <em>so small</em> that I could not see how they might be applied
-								to the kind of software I build.
-							</li>
-							<li>
-								Most frameworks were <em>enormous</em> and required command line utilities and
-								some additional server-side technology (like Ruby On Rails) just to experiment with.
-							</li>
-						</ol>
-						
-						<p>
-							I didn't even know how to begin learning. So, rather than wade through what was 
-							available, I decided to try and create something from scratch. What I came up with
-							is <strong>Rikiki MVC</strong>. The philosophies that I put into the Rikiki MVC framework 
-							are those that were hopefully a remedy to the problems I encoutered above:
-						</p>
-						
-						<ol>
-							<li>
-								<strong>A large sample application</strong>. This whole demo site (including the 
-								contacts section) runs off of Rikiki MVC as a single-page application.
-							</li>
-							<li>
-								<strong>No server required</strong>. This demo application does not require any additional 
-								server-side technologies. If you have a web browser, you can 
-								<em>download and run</em> this application immediately.
-							</li>
-							<li>
-								<strong>No building required</strong>. This framework does not require you to
-								build the application using scaffolding or any other command-line executables. 
-								You just download it and open it up in a browser.
-							</li>
-							<li>
-								<strong>Small Framework</strong>. This framework is very small (and <em>excessively
-								commented</em>). It doesn't do anything more than it is supposed to.
-							</li>
-						</ol>
-						
-						<p> While I want to keep the Rikiki MVC framework as small as possible, I am sure that as I begin to more fully understand the various needs of single-page applications, the framework will have to evolve as necessary. In the end though, I want the Rikiki MVC framework to be an aide and <em>not a constraint</em>- affording the programmer the freedom to pile their own jQuery magic on top of this foundation.</p>
-						
-						<h2>
-							What If Javascript Is Not Enabled?
-						</h2>
-						
-						<p>
-							When dealing with Javascript and "progressive enhancement enthusiast," someone always asks how this should work / degrade if the end user does not have Javascript enabled. 
-							While this might be a contentious answer, if your target user does not have Javascript
-							enabled, then I don't think they should be using a single-page application. That's like 
-							asking how a user should navigate a FLEX application if they don't have Flash installed;
-							it doesn't make sense. I'm <strong>not</strong> talking about building "pamphlet" sites here - 
-							I'm talking about building complex, user-experience-oriented applications.
-						</p>
+							Building frameworks in jQuery (or any other language for that matter) is
+
+							very new to me; I don't claim to be any good at it. In fact, when I started
+
+							looking into jQuery-based frameworks, I had no intention of creating my own. 
+
+							As I started to do my research, however, I quickly encountered two major problems
+
+							with what was avilable:
+
+						</p>
+
+						
+
+						<ol>
+
+							<li>
+
+								Most examples were <em>so small</em> that I could not see how they might be applied
+
+								to the kind of software I build.
+
+							</li>
+
+							<li>
+
+								Most frameworks were <em>enormous</em> and required command line utilities and
+
+								some additional server-side technology (like Ruby On Rails) just to experiment with.
+
+							</li>
+
+						</ol>
+
+						
+
+						<p>
+
+							I didn't even know how to begin learning. So, rather than wade through what was 
+
+							available, I decided to try and create something from scratch. What I came up with
+
+							is <strong>Rikiki MVC</strong>. The philosophies that I put into the Rikiki MVC framework 
+
+							are those that were hopefully a remedy to the problems I encoutered above:
+
+						</p>
+
+						
+
+						<ol>
+
+							<li>
+
+								<strong>A large sample application</strong>. This whole demo site (including the 
+
+								contacts section) runs off of Rikiki MVC as a single-page application.
+
+							</li>
+
+							<li>
+
+								<strong>No server required</strong>. This demo application does not require any additional 
+
+								server-side technologies. If you have a web browser, you can 
+
+								<em>download and run</em> this application immediately.
+
+							</li>
+
+							<li>
+
+								<strong>No building required</strong>. This framework does not require you to
+
+								build the application using scaffolding or any other command-line executables. 
+
+								You just download it and open it up in a browser.
+
+							</li>
+
+							<li>
+
+								<strong>Small Framework</strong>. This framework is very small (and <em>excessively
+
+								commented</em>). It doesn't do anything more than it is supposed to.
+
+							</li>
+
+						</ol>
+
+						
+
+						<p> While I want to keep the Rikiki MVC framework as small as possible, I am sure that as I begin to more fully understand the various needs of single-page applications, the framework will have to evolve as necessary. In the end though, I want the Rikiki MVC framework to be an aide and <em>not a constraint</em>- affording the programmer the freedom to pile their own jQuery magic on top of this foundation.</p>
+
+						
+
+						<h2>
+
+							What If Javascript Is Not Enabled?
+
+						</h2>
+
+						
+
+						<p>
+
+							When dealing with Javascript and "progressive enhancement enthusiast," someone always asks how this should work / degrade if the end user does not have Javascript enabled. 
+
+							While this might be a contentious answer, if your target user does not have Javascript
+
+							enabled, then I don't think they should be using a single-page application. That's like 
+
+							asking how a user should navigate a FLEX application if they don't have Flash installed;
+
+							it doesn't make sense. I'm <strong>not</strong> talking about building "pamphlet" sites here - 
+
+							I'm talking about building complex, user-experience-oriented applications.
+
+						</p>
+
                     </li>
                     <li rel="documentation" class="ui-repeater">
                         <h1>Documentation</h1>

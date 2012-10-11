@@ -1,0 +1,72 @@
+.fn-float-right {
+    float: right;
+}
+.ui-list {
+    margin: 0;
+    padding: 0;
+}
+.ui-list li{
+    list-style: none;
+    padding: 0.2em;
+}
+.contact-list, .contact-form {
+    background-color: lightskyblue;
+    border:skyblue solid 1px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+.contact-form {
+    padding: 1em;
+}
+.ui-list-item-odd {
+    background: lightblue;
+}
+.contact-list > li {
+    padding: 0.5em;
+}
+.contact-list > li:hover {
+    background: lightpink;
+    border: pink;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+.contact-item .edit, .contact-item .delete, .action-add {
+    display: block;
+    width: 5em;
+    padding: 0.3em;
+}
+.action-add {
+    display: inline-block;
+}
+.action-add:before {
+    content: 'Create!';
+}
+.contact-item .edit:before {
+    content:'Edit';
+}
+.contact-item .delete:before {
+    content:'Delete';
+}
+.contact-list > li:hover .contact-item-title {
+    color:white;
+}
+.contact-item-title {
+    text-transform: capitalize;
+    display: inline-block;
+    width: 7em;
+    text-align: right;
+    margin-right: 1em;
+}
+.searchbox {
+    background-color: lightpink;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border:pink solid 1px;
+    padding: 0.5em;
+}
+.searchbox > input {
+    font-size: 1.5em;
+}

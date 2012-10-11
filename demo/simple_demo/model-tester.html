@@ -18,6 +18,7 @@
         <h1 class="upper-case">Action</h1>
         <select id="method" class="upper-case">
         </select>
+        <div><button id="execute">EXECUTE</button></div>
         <div id="action">
         </div>
         <div>
@@ -26,6 +27,31 @@
     </body>
 </html>
 <script type="text/javascript">
+$("#execute").bind('click', function(){
+    var useMethod = $("#method").val();
+    switch (useMethod) {
+        case 'query':
+        var uri = '/contacts/contacts.php';
+        Rikiki.httprequest_query(uri, null, null);
+        break;
+        case 'update':
+        var uri = '/contacts/contacts.php';
+        Rikiki.httprequest_query(uri, null, null);
+        break;
+        case 'create':
+        var uri = '/contacts/contacts.php';
+        Rikiki.httprequest_query(uri, null, null);
+        break;
+        case 'delete':
+        var uri = '/contacts/contacts.php';
+        Rikiki.httprequest_query(uri, null, null);
+        break;
+        default:
+            throw "oh no!";
+        break;
+    }
+});
+
 function do_jsonp() {
     console.log('do_jsonp');
     $.getJSON('http://localhost/mt/demo/simple_demo/model-tester.php?action=?', function fuckyou(data) {console.log('do_jsonp', data.nick)});
@@ -53,23 +79,23 @@ $("#action button").bind('click', function(){
     switch (useMethod) {
         case 'query':
         var uri = '/model-tester.php?fuck=avc';
-        var query_data = {output:Rikiki.Config('model.ajax_dataType'), code:$(this).attr("status"), process_style:Rikiki.Config('model.process_style')};
-        Rikiki.ajax_query(uri, query_data);
+        var query_data = {output:Rikiki.Config('model.httprequest_dataType'), code:$(this).attr("status"), process_style:Rikiki.Config('model.process_style')};
+        Rikiki.httprequest_query(uri, query_data);
         break;
         case 'update':
         var uri = '/model-tester.php?fuck=avc';
-        var query_data = {output:Rikiki.Config('model.ajax_dataType'), code:$(this).attr("status"), process_style:Rikiki.Config('model.process_style')};
-        Rikiki.ajax_update(uri, query_data,query_data);
+        var query_data = {output:Rikiki.Config('model.httprequest_dataType'), code:$(this).attr("status"), process_style:Rikiki.Config('model.process_style')};
+        Rikiki.httprequest_update(uri, query_data,query_data);
         break;
         case 'create':
         var uri = '/model-tester.php?fuck=avc';
-        var query_data = {output:Rikiki.Config('model.ajax_dataType'), code:$(this).attr("status"), process_style:Rikiki.Config('model.process_style')};
-        Rikiki.ajax_create(uri, query_data, query_data);
+        var query_data = {output:Rikiki.Config('model.httprequest_dataType'), code:$(this).attr("status"), process_style:Rikiki.Config('model.process_style')};
+        Rikiki.httprequest_create(uri, query_data, query_data);
         break;
         case 'delete':
         var uri = '/model-tester.php?fuck=avc';
-        var query_data = {output:Rikiki.Config('model.ajax_dataType'), code:$(this).attr("status"), process_style:Rikiki.Config('model.process_style')};
-        Rikiki.ajax_delete(uri, query_data);
+        var query_data = {output:Rikiki.Config('model.httprequest_dataType'), code:$(this).attr("status"), process_style:Rikiki.Config('model.process_style')};
+        Rikiki.httprequest_delete(uri, query_data);
         break;
         default:
             throw "oh no!";

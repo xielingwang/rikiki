@@ -128,6 +128,11 @@
                 window.location.hash = Rikiki.Config('locationHashPrefix') + hash;
                 return hash;
             }
+        },
+        pageTitle : function (title) {
+            if (Rikiki.Config('sitename'))
+                title = title + ' - ' + Rikiki.Config('sitename');
+            document.title = title;
         }
     });
     
@@ -193,7 +198,7 @@
         locationHashTrackInterval : 500,
 
         // debug
-        debug : false,
+        debug : true,
 
         // for model
         model : {
@@ -426,17 +431,19 @@
                 },
                 after:function(){
                     Rikiki.Request_method('GET');
-                    Rikiki.Request_post('');
+                    Rikiki.Request_post(null);
                     console.log('base after');
                     return this;
                 },
-                showViews:function(viewsToShow, newDatas, setOthersHidden){
+                showViews:function(viewsToShow, newDatas, opts){
                     viewsToShow = viewsToShow || [];
-                    setOthersHidden = setOthersHidden === false ? false : true;
+                    opts = opts || {};
+                    opts.setOthersHidden = opts.setOthersHidden === false ? false : true;
+                    opts.isGlobalData = opts.isGlobalData === true ? true : false;
                     if (typeof(viewsToShow) === 'string')
                         viewsToShow = [viewsToShow];
                     
-                    if (setOthersHidden) {
+                    if (opts.setOthersHidden) {
                         // hide self other _views
                         for(var idx in this._views) {
                             if ($.inArray(this._views[idx], viewsToShow) < 0) {
@@ -458,8 +465,12 @@
 
                     for (var i in viewsToShow) {
                         var view = Rikiki.View(viewsToShow[i]);
-                        if (newDatas)
-                            view.data(newDatas);
+                        if (newDatas) {
+                            if (opts.isGlobalData)
+                                view.global_data(newDatas);
+                            else 
+                                view.data(newDatas);
+                        }
                         view.show();
                     }
                     
@@ -604,7 +615,8 @@
             
             return 'body';
         })(content, parent);
-        this._subviews = [];
+        this._subviews_before = [];
+        this._subviews_after = [];
 
         this._reload_data  = true;
         this._reload_event = true;
@@ -619,21 +631,36 @@
             return this._name;
         },
         
-        // add child
-        addSubview : function(name, content, parent) {
-            var subview_name = this.name + "-" + name;
+        // add sub view
+        addSubviewBefore : function(name, content, parent) {
+            return this.addSubview(name, content, parent, 'before');
+        },
+        addSubviewAfter : function(name, content, parent) {
+            return this.addSubview(name, content, parent, 'after');
+        },
+        addSubview : function(name, content, parent, position) {
+            var subview_name = this.name() + "-" + name;
             Rikiki.View(subview_name, content, parent);
-            this._subviews.push(subview_name);
+
+            position = position || 'before';
+            if (position == 'before')
+                this._subviews_before.push(subview_name);
+            else
+                this._subviews_after.push(subview_name);
+
+            return this;
         },
         getSubview : function(name) {
-            var subview_name = this.name + "-" + name;
-            if ($.inArray(subview_name, this._subviews) > -1)
+            var subview_name = this.name() + "-" + name;
+            if ($.inArray(subview_name, this._subviews_before) >= 0 || $.inArray(subview_name, this._subviews_after) >= 0)
                 return Rikiki.View(subview_name);
-            return false;
+            return null;
         },
         
         // set data
         data : function(nameOrObject, data) {
+            console.log(this.name(), 'data');
+            if (this.name() == 'contact-index-search') throw "f";
             this._data = this._data || {};
             if (typeof(nameOrObject) == 'string') { 
                 var name = nameOrObject;
@@ -649,9 +676,11 @@
                 }
             }
             else if ($.isPlainObject(nameOrObject)){
-                $.extend(true, this._data, nameOrObject);
+                this._data = nameOrObject; //$.extend(true, this._data, nameOrObject);
             }
             this._reload_data = true;
+
+            console.log(this._data);
             
             // when set data, update the view
             this.update();
@@ -662,8 +691,11 @@
         // set global data
         global_data : function(nameOrObject, data) {
             this.data(nameOrObject, data);
-            $.each(this._subviews, function(k,v) {
-                Rikiki.View(v).data(nameOrObject, data);
+            $.each(this._subviews_before, function(k,v) {
+                Rikiki.View(v).global_data(nameOrObject, data);
+            });
+            $.each(this._subviews_after, function(k,v) {
+                Rikiki.View(v).global_data(nameOrObject, data);
             });
             return this;
         },
@@ -713,7 +745,10 @@
                         jq[effect.fx].apply(this.node(), [effect.speed]);
                     }
                 }
-                $.each(this._subviews, function(k,v) {
+                $.each(this._subviews_before, function(k,v) {
+                    Rikiki.View(v).hide(annimate);
+                });
+                $.each(this._subviews_after, function(k,v) {
                     Rikiki.View(v).hide(annimate);
                 });
             }
@@ -739,6 +774,13 @@
         // show -- render and show
         show : function(annimate) {
             annimate = annimate === false ? false : true;
+
+            // subview before
+            $.each(this._subviews_before, function(k,v) {
+                Rikiki.View(v).show(annimate);
+            });
+
+            // main view
             if (this.render().node()) {
                 if (!annimate) {
                     this.node().show();
@@ -754,10 +796,12 @@
                         jq[effect.fx].apply(this.node(), [effect.speed]);
                     }
                 }
-                $.each(this._subviews, function(k,v) {
-                    Rikiki.View(v).show(annimate);
-                });
             }
+
+            // subview after
+            $.each(this._subviews_after, function(k,v) {
+                Rikiki.View(v).show(annimate);
+            });
             return this;
         },
         
@@ -775,6 +819,7 @@
             if (this.node() && (this._reload_data || this._reload_event)) {
                 for(var i in this._event) {
                     var struct = this._event[i];
+                    console.log(struct);
                     this.node().find(struct.selector).bind(struct.event, struct.callback);
                 }
             }
@@ -817,8 +862,10 @@
         RikikiData.views[name] = new View(name, content, parent);
         
         // previous binding
-        RikikiData.views[name].bind("form.rikiki", "submit", function(){
+        RikikiData.views[name].bind("form[type=rikiki-form]", "submit", function(){
             try {
+                Rikiki.Request_form(this);
+                console.log('serializeObject', $(this).serializeObject());
                 Rikiki.Request_redirect($(this).attr("action"), $(this).serializeObject());
             }
             catch(e) {
@@ -917,10 +964,10 @@
                 }
                 catch(e) {
                     // Rikiki.Exception_Network Rikiki.Exception_Request Rikiki.Exception_Reflection Rikiki.Exception_InternalError
-                    if (e instanceof Rikiki.Exception_Reflection || e instanceof Rikiki.Exception_InternalError)
+                    if (e instanceof Rikiki.Exception_Reflection || e instanceof Rikiki.Exception_InternalError || e instanceof Rikiki.Exception_Request)
                         Rikiki.Event_run("requestException", request);
                     else
-                        console.error('unexpected error');
+                        console.error('unexpected error', e);
                 }
             }
             else {
@@ -938,11 +985,11 @@
 
     // Environmment Variable
     Rikiki.Runtime = function(name, val){
-        if (!name)
+        if (typeof(name) === 'undefined')
             return;
         
         var ret = RikikiData.runtime_data[name];
-        if (val !== undefined)
+        if (typeof(val) !== 'undefined')
             RikikiData.runtime_data[name] = val;
         return ret;
     };
@@ -1033,22 +1080,30 @@
             var _controller = Rikiki.Controller_instance(_self.controller);
             if (typeof(_controller["action_"+_self.action]) !== 'function') {
                 _self.status = 404;
-                throw new Rikiki.Exception_Reflection(_self.controller + " have not method action_" + _self.action);
+                throw new Rikiki.Exception_Reflection(_self.controller + " have no method action_" + _self.action);
             }
 
             // environment
             _controller.request = _self;
             
             // execute
-            _controller.before();
-            try {
+            if (Rikiki.Config('debug')) {
+                _controller.before();
                 _controller["action_"+_self.action].apply(_controller, _self.args);
+                _controller.after();
             }
-            catch(e) {
-                _self.status = 500;
-                throw new Rikiki.Exception_Reflection(_self.controller + " have not method action_" + _self.action, e);
+            else {
+                try {
+                    _controller.before();
+                    _controller["action_"+_self.action].apply(_controller, _self.args);
+                    _controller.after();
+                }
+                catch(e) {
+                    _self.status = 500;
+                    console.error(e);
+                    throw new Rikiki.Exception_Reflection(_self.controller + ".action_" + _self.action + " happenned error when executing!", e);
+                }
             }
-            _controller.after();
             
             Rikiki.UI_Current(uri);
         }
@@ -1102,7 +1157,6 @@
         if (typeof(post) !== 'undefined') {
             Rikiki.Request_method('POST');
             Rikiki.Request_post(post);
-            console.log("post data: ", Rikiki.Request_post());
         }
         $.hash(uri);
     }
@@ -1153,13 +1207,21 @@
         var lioa = options.url.lastIndexOf("&");
         var maxIndex = options.url.length - 1;
         if (options.query_data) {
-            options.url += ((lioqm < 0) 
-                            ? "?" 
-                            : (lioqm < maxIndex && lioa < maxIndex) ? "&" : "") + $.param(options.query_data);
+            var urlparam = $.param(options.query_data);
+            if (urlparam) {
+                options.url += ((lioqm < 0) 
+                                ? "?" 
+                                : (lioqm < maxIndex && lioa < maxIndex) ? "&" : "") + urlparam;
+            }
         }
 
         // data Type
         options.dataType = Rikiki.Config('model.ajax_dataType');
+        if ($.isPlainObject(options.data)) {
+            if ($.inArray(options.type, ['post','put']) >= 0 && options.dataType == 'json') {
+                options.data = JSON.stringify(options.data);
+            }
+        }
 
         // return json processor
         var return_json_processor = function(status, data, type) {
@@ -1221,9 +1283,14 @@
         /**/
         console.log("");
         console.log(options);/**/
-        $.ajax(options);
+        if (Rikiki.Runtime("ajaxing")) {
+            Rikiki.Runtime("ajaxing").abort();
+            Rikiki.Runtime_delete("ajaxing");
+        }
+        Rikiki.Runtime("ajaxing", $.ajax(options));
     }
     RikikiCore.httprequest_query = function(uri, query_data, response_processors) {
+        query_data = query_data || {};
         var default_response_processors = {
             200 : function(data){
                 console.log('query', 200, data);
@@ -1241,6 +1308,7 @@
         Rikiki.httprequest(options, response_processors);
     }
     RikikiCore.httprequest_delete = function(uri, query_data, response_processors) {
+        query_data = query_data || {};
         var default_response_processors = {
             201 : function(data){
                 console.log('not found', 201, data);
@@ -1261,13 +1329,12 @@
             type:method, 
             url:uri
         };
-        if (method === 'delete') 
-            options.data = query_data;
-        else
-            options.query_data = query_data;
+        options.query_data = query_data;
         Rikiki.httprequest(options, response_processors);
     }
     RikikiCore.httprequest_create = function(uri, query_data, data, response_processors) {
+        query_data = query_data || {};
+        data = data || {};
         var default_response_processors = {
             201 : function(data){
                 console.log('existed', 201, data);
@@ -1290,6 +1357,8 @@
         Rikiki.httprequest(options, response_processors);
     }
     RikikiCore.httprequest_update = function(uri, query_data, data, response_processors) {
+        query_data = query_data || {};
+        data = data || {};
         var default_response_processors = {
             404 : function(data){
                 console.log('not found', 404, data);
@@ -1408,6 +1477,9 @@
     }
     Rikiki.Request_redirect = function(uri, post) {
         return  RikikiCore.request_redirect.apply(this, arguments);
+    }
+    Rikiki.Request_form = function(form) {
+        return Rikiki.Runtime('request_form', form);
     }
     Rikiki.Request_post = function(data) {
         return Rikiki.Runtime('request_post', data);

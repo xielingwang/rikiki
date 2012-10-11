@@ -80,13 +80,29 @@ if (isset($_GET['action'])) $action = $_GET['action'];
 if (isset($_GET['process_style']) and $_GET['process_style'] == 'http-status') 
     header($messages[$code], true, $code);
 
-    session_start();
+session_start();
+
+// if first time access, it means that traveller have no session data on server
 if (!isset($_SESSION['contacts'])) {
     $contacts = array();
+
+    // these things for generate the test data
     $emails = array('gmail','yahoo','126','163','foxmail');
     $strings = "Charity suffereth long, and is kind; charity envieth not; charity vaunteth not itself, is not puffed up, doth not behave itself unseemly, seeketh not her own, is not easily provoked, thinketh no evil; rejoiceth not in iniquith, but rejoiceth in the truth; beareth all things, believeth all things, hopeth all things, endureth all things. Charity never faileth";
     $words = preg_split("/[\s,;\.]+/i", ucwords($strings));
-    for($i = 1; $i <= 50; $i++) {
+
+
+    // for advertising, first item is mine
+    $contacts[] = array(
+        'id' => uniqid(),
+        'first_name' => 'Amin',
+        'last_name' => 'By',
+        'telephone' => '1825915XXXX',
+        'email' => 'xielingwang#gmail.com',
+        );
+
+    // generate 49 radom contact
+    for($i = 1; $i < 50; $i++) {
         $first_index = rand(0, sizeof($words) - 1);
         $last_index = rand(0, sizeof($words) - 1);
         $firstname = $words[$first_index];
@@ -99,10 +115,14 @@ if (!isset($_SESSION['contacts'])) {
             'email' => strtolower($firstname . '_' . $lastname).'@'.$emails[rand(0, sizeof($emails) - 1)].'.com',
             );
     }
+    // save it
     $_SESSION['contacts'] = $contacts;
 }
+
+// ok from now on, the data traveller modified will saved on server till the session expired
 $contacts = $_SESSION['contacts'];
 
+// function for filter the contacts
 function contact_filter($item) {
     foreach ($item as $k => $v) {
         if ($k == 'id') continue;
@@ -111,8 +131,11 @@ function contact_filter($item) {
     }
 }
 
-$optioned = array('telephone','email');
-$needed = array('first_name','last_name');
+// total 4 field, 2 required and 2 optioned
+$option_fields = array('telephone','email');
+$required_fields = array('first_name','last_name');
+
+// and then, the action query,create,update or delete
 switch($action) {
     case 'query':
     default:
@@ -131,9 +154,10 @@ switch($action) {
         header($messages[404], true, 404);
     }
     break;
+
     case 'create':
     $contact = array();
-    foreach($needed as $key) {
+    foreach($required_fields as $key) {
         if (empty($_POST[$key])) {
             header($messages[400], true, 400);
             echo json_encode(array('msg' => $key, 'action' => $action, 'raw' => $raw));
@@ -141,7 +165,7 @@ switch($action) {
         }
         $contact[$key] = $_POST[$key];
     }
-    foreach($optioned as $key) {
+    foreach($option_fields as $key) {
         if (empty($_POST[$key])) continue;
         $contact[$key] = $_POST[$key];
     }
@@ -149,6 +173,7 @@ switch($action) {
     $contacts[] = $contact;
     $_SESSION['contacts'] = $contacts;
     break;
+
     case 'update':
     if (empty($_GET['id']))
         header($messages[400], true, 400);
@@ -161,7 +186,7 @@ switch($action) {
             }
         }
         if ($found) {
-            foreach(array_merge($optioned, $needed) as $key) {
+            foreach(array_merge($option_fields, $required_fields) as $key) {
                 if (empty($_POST[$key])) continue;
                 $contacts[$k][$key] = $_POST[$key];
             }
@@ -172,6 +197,7 @@ switch($action) {
     }
     $_SESSION['contacts'] = $contacts;
     break;
+
     case 'delete':
     if (empty($_GET['id']))
         header($messages[400], true, 400);
